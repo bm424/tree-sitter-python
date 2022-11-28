@@ -129,19 +129,21 @@ module.exports = grammar({
       )
     ),
 
-    import_from_statement: $ => seq(
+    import_from_statement: $ => prec(1, seq(
       'from',
       field('module_name', choice(
+        $.capture,
         $.relative_import,
         $.dotted_name
       )),
       'import',
       choice(
+        $.capture,
         $.wildcard_import,
         $._import_list,
         seq('(', $._import_list, ')')
       )
-    ),
+    )),
 
     _import_list: $ => seq(
       commaSep1(field('name', choice(
@@ -154,7 +156,7 @@ module.exports = grammar({
     aliased_import: $ => seq(
       field('name', $.dotted_name),
       'as',
-      field('alias', $.identifier)
+      field('alias', choice($.identifier, $.capture))
     ),
 
     wildcard_import: $ => '*',
@@ -199,6 +201,7 @@ module.exports = grammar({
 
     _named_expresssion_lhs: $ => choice(
       $.identifier,
+      $.capture,
       alias('match', $.identifier), // ambiguity with match statement: only ":" at end of line decides if "match" keyword
     ),
 
@@ -356,7 +359,7 @@ module.exports = grammar({
     function_definition: $ => seq(
       optional('async'),
       'def',
-      field('name', $.identifier),
+      field('name', choice($.identifier, $.capture)),
       field('parameters', $.parameters),
       optional(
         seq(
@@ -388,12 +391,12 @@ module.exports = grammar({
 
     global_statement: $ => seq(
       'global',
-      commaSep1($.identifier)
+      commaSep1(choice($.identifier, $.capture))
     ),
 
     nonlocal_statement: $ => seq(
       'nonlocal',
-      commaSep1($.identifier)
+      commaSep1(choice($.identifier, $.capture))
     ),
 
     exec_statement: $ => seq(
@@ -409,7 +412,7 @@ module.exports = grammar({
 
     class_definition: $ => seq(
       'class',
-      field('name', $.identifier),
+      field('name', choice($.identifier, $.capture)),
       field('superclasses', optional($.argument_list)),
       ':',
       field('body', $._suite)
@@ -478,7 +481,7 @@ module.exports = grammar({
       )
     )),
 
-    dotted_name: $ => sep1($.identifier, '.'),
+    dotted_name: $ => sep1(choice($.identifier, $.capture), '.'),
 
     // Patterns
 
@@ -494,6 +497,7 @@ module.exports = grammar({
 
     parameter: $ => choice(
       $.identifier,
+      $.capture,
       $.typed_parameter,
       $.default_parameter,
       $.typed_default_parameter,
@@ -506,6 +510,7 @@ module.exports = grammar({
 
     pattern: $ => choice(
       $.identifier,
+      $.capture,
       alias('match', $.identifier), // ambiguity with match statement: only ":" at end of line decides if "match" keyword
       $.keyword_identifier,
       $.subscript,
@@ -528,13 +533,13 @@ module.exports = grammar({
     ),
 
     default_parameter: $ => seq(
-      field('name', $.identifier),
+      field('name', choice($.identifier, $.capture)),
       '=',
       field('value', $.expression)
     ),
 
     typed_default_parameter: $ => prec(PREC.typed_parameter, seq(
-      field('name', $.identifier),
+      field('name', choice($.identifier, $.capture)),
       ':',
       field('type', $.type),
       '=',
@@ -543,12 +548,12 @@ module.exports = grammar({
 
     list_splat_pattern: $ => seq(
       '*',
-      choice($.identifier, $.keyword_identifier, $.subscript, $.attribute)
+      choice($.identifier, $.capture, $.keyword_identifier, $.subscript, $.attribute)
     ),
 
     dictionary_splat_pattern: $ => seq(
       '**',
-      choice($.identifier, $.keyword_identifier, $.subscript, $.attribute)
+      choice($.identifier, $.capture, $.keyword_identifier, $.subscript, $.attribute)
     ),
 
     // Extended patterns (patterns allowed in match statement are far more flexible than simple patterns though still a subset of "expression")
@@ -581,6 +586,7 @@ module.exports = grammar({
     primary_expression: $ => choice(
       $.binary_operator,
       $.identifier,
+      $.capture,
       alias("match", $.identifier),
       $.keyword_identifier,
       $.string,
@@ -747,7 +753,7 @@ module.exports = grammar({
     attribute: $ => prec(PREC.call, seq(
       field('object', $.primary_expression),
       '.',
-      field('attribute', $.identifier)
+      field('attribute', choice($.identifier, $.capture))
     )),
 
     subscript: $ => prec(PREC.call, seq(
@@ -778,6 +784,7 @@ module.exports = grammar({
     typed_parameter: $ => prec(PREC.typed_parameter, seq(
       choice(
         $.identifier,
+        $.capture,
         $.list_splat_pattern,
         $.dictionary_splat_pattern
       ),
@@ -788,7 +795,7 @@ module.exports = grammar({
     type: $ => $.expression,
 
     keyword_argument: $ => seq(
-      field('name', choice($.identifier, $.keyword_identifier, alias("match", $.identifier))),
+      field('name', choice($.identifier, $.capture, $.keyword_identifier, alias("match", $.identifier))),
       '=',
       field('value', $.expression)
     ),
@@ -1041,6 +1048,8 @@ module.exports = grammar({
         optional(choice(/[Ll]/, /[jJ]/))
       ))
     },
+
+    capture: $ => seq('${', $.identifier, optional(/\?\*\+/),  '}'),
 
     identifier: $ => /[_\p{XID_Start}][_\p{XID_Continue}]*/,
 
