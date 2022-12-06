@@ -46,6 +46,10 @@
     "named": true,
     "subtypes": [
       {
+        "type": "anything",
+        "named": true
+      },
+      {
         "type": "assert_statement",
         "named": true
       },
@@ -112,6 +116,10 @@
     "named": true,
     "subtypes": [
       {
+        "type": "anything",
+        "named": true
+      },
+      {
         "type": "as_pattern",
         "named": true
       },
@@ -153,6 +161,10 @@
     "type": "parameter",
     "named": true,
     "subtypes": [
+      {
+        "type": "anything",
+        "named": true
+      },
       {
         "type": "capture",
         "named": true
@@ -233,6 +245,10 @@
     "type": "primary_expression",
     "named": true,
     "subtypes": [
+      {
+        "type": "anything",
+        "named": true
+      },
       {
         "type": "attribute",
         "named": true
@@ -360,6 +376,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "anything",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "argument_list",
@@ -1275,6 +1296,11 @@
         ]
       }
     }
+  },
+  {
+    "type": "ellipsis",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "else_clause",
@@ -2862,6 +2888,10 @@
     "named": false
   },
   {
+    "type": "...",
+    "named": false
+  },
+  {
     "type": "/",
     "named": false
   },
@@ -3012,10 +3042,6 @@
   {
     "type": "elif",
     "named": false
-  },
-  {
-    "type": "ellipsis",
-    "named": true
   },
   {
     "type": "else",

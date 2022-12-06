@@ -28,4 +28,31 @@ from ${module_name} import ${import_name}
     (capture
       (identifier))))
 
+================================================================================
+Capture anything
+================================================================================
 
+class Example(...):
+    ...
+
+    def __init__(...):
+        ...
+        return ...
+
+--------------------------------------------------------------------------------
+
+(module
+  (class_definition
+    (identifier)
+    (argument_list
+      (anything))
+    (block
+      (anything)
+      (function_definition
+        (identifier)
+        (parameters
+          (anything))
+        (block
+          (anything)
+          (return_statement
+            (anything)))))))

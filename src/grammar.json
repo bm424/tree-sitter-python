@@ -73,6 +73,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "anything"
+        },
+        {
+          "type": "SYMBOL",
           "name": "future_import_statement"
         },
         {
@@ -2287,6 +2291,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "anything"
+        },
+        {
+          "type": "SYMBOL",
           "name": "typed_parameter"
         },
         {
@@ -2620,6 +2628,10 @@
       "members": [
         {
           "type": "SYMBOL",
+          "name": "anything"
+        },
+        {
+          "type": "SYMBOL",
           "name": "comparison_operator"
         },
         {
@@ -2659,6 +2671,10 @@
     "primary_expression": {
       "type": "CHOICE",
       "members": [
+        {
+          "type": "SYMBOL",
+          "name": "anything"
+        },
         {
           "type": "SYMBOL",
           "name": "binary_operator"
@@ -5481,6 +5497,14 @@
         }
       ]
     },
+    "anything": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "STRING",
+        "value": "..."
+      }
+    },
     "identifier": {
       "type": "PATTERN",
       "value": "[_\\p{XID_Start}][_\\p{XID_Continue}]*"
@@ -5580,6 +5604,15 @@
     }
   ],
   "conflicts": [
+    [
+      "primary_expression",
+      "_simple_statements",
+      "expression"
+    ],
+    [
+      "primary_expression",
+      "expression"
+    ],
     [
       "primary_expression",
       "pattern"

@@ -34,6 +34,8 @@ module.exports = grammar({
   ],
 
   conflicts: $ => [
+    [$.primary_expression, $._simple_statements, $.expression],
+    [$.primary_expression, $.expression],
     [$.primary_expression, $.pattern],
     [$.primary_expression, $.list_splat_pattern],
     [$.tuple, $.tuple_pattern],
@@ -90,6 +92,7 @@ module.exports = grammar({
     ),
 
     _simple_statement: $ => choice(
+      $.anything,
       $.future_import_statement,
       $.import_statement,
       $.import_from_statement,
@@ -498,6 +501,7 @@ module.exports = grammar({
     parameter: $ => choice(
       $.identifier,
       $.capture,
+      $.anything,
       $.typed_parameter,
       $.default_parameter,
       $.typed_default_parameter,
@@ -572,6 +576,7 @@ module.exports = grammar({
     ),
 
     expression: $ => choice(
+      $.anything,
       $.comparison_operator,
       $.not_operator,
       $.boolean_operator,
@@ -584,6 +589,7 @@ module.exports = grammar({
     ),
 
     primary_expression: $ => choice(
+      $.anything,
       $.binary_operator,
       $.identifier,
       $.capture,
@@ -1050,6 +1056,7 @@ module.exports = grammar({
     },
 
     capture: $ => seq('${', $.identifier, optional(/\?\*\+/),  '}'),
+    anything: $ => prec(1, '...'),
 
     identifier: $ => /[_\p{XID_Start}][_\p{XID_Continue}]*/,
 
