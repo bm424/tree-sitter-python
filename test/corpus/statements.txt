@@ -486,6 +486,17 @@ else:
 finally:
   f
 
+try:
+  a
+except* b:
+  c
+except* d as e:
+  f
+else:
+  g
+finally:
+  h
+
 --------------------------------------------------------------------------------
 
 (module
@@ -534,6 +545,31 @@ finally:
     (finally_clause
       (block
         (expression_statement
+          (identifier)))))
+  (try_statement
+    body: (block
+      (expression_statement
+        (identifier)))
+    (except_group_clause
+      (identifier)
+      (block
+        (expression_statement
+          (identifier))))
+    (except_group_clause
+      (as_pattern
+        (identifier)
+        alias: (as_pattern_target
+          (identifier)))
+      (block
+        (expression_statement
+          (identifier))))
+    (else_clause
+      body: (block
+        (expression_statement
+          (identifier))))
+    (finally_clause
+      (block
+        (expression_statement
           (identifier))))))
 
 ================================================================================
@@ -546,6 +582,9 @@ with a as b:
 with (open('d') as d,
       open('e') as e):
   f
+
+with e as f, g as h,:
+  i
 
 --------------------------------------------------------------------------------
 
@@ -576,6 +615,21 @@ with (open('d') as d,
             (identifier)
             (argument_list
               (string)))
+          (as_pattern_target
+            (identifier)))))
+    (block
+      (expression_statement
+        (identifier))))
+  (with_statement
+    (with_clause
+      (with_item
+        (as_pattern
+          (identifier)
+          (as_pattern_target
+            (identifier))))
+      (with_item
+        (as_pattern
+          (identifier)
           (as_pattern_target
             (identifier)))))
     (block
