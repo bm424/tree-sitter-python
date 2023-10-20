@@ -912,10 +912,10 @@ module.exports = grammar({
     )),
 
     slice: $ => seq(
-      optional($.expression),
+      field('lower', optional($.expression)),
       ':',
-      optional($.expression),
-      optional(seq(':', optional($.expression))),
+      field('upper', optional($.expression)),
+      optional(seq(':', field('step', optional($.expression)))),
     ),
 
     ellipsis: _ => '...',
