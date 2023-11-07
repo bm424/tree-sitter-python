@@ -675,6 +675,8 @@ Assignments with type annotations
 ================================================================================
 
 tail_leaves: List[Leaf] = []
+tail_leaves: typing.List[Leaf] = []
+def f(a: typing.List[...]): pass
 
 --------------------------------------------------------------------------------
 
@@ -688,7 +690,34 @@ tail_leaves: List[Leaf] = []
           (type_parameter
             (type
               (identifier)))))
-      (list))))
+      (list)))
+  (expression_statement
+    (assignment
+      (identifier)
+      (type
+        (generic_type
+          (attribute
+            (identifier)
+            (identifier))
+          (type_parameter
+            (type
+              (identifier)))))
+      (list)))
+  (function_definition
+    (identifier)
+    (parameters
+      (typed_parameter
+        (identifier)
+        (type
+          (generic_type
+            (attribute
+              (identifier)
+              (identifier))
+            (type_parameter
+              (type
+                (ellipsis)))))))
+    (block
+      (pass_statement))))
 
 ================================================================================
 Augmented assignments

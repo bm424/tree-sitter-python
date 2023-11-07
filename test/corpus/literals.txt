@@ -489,8 +489,14 @@ f"a {b:2} {c:34.5}"
 f"{b:{c.d}.{d.e}}"
 f"{a:#06x}"
 f"{a=}"
+f"{a=:=5}"
 f"{a=:.2f}"
 f"{value:{width + padding!r}.{precision}}"
+f"{5:=10}"
+f"{x!s:=10}"
+f"{x:=10}"
+f"{(x:=10)}"
+f"{a:={(x:={3: 4}.get(3)):0<2}}"
 
 --------------------------------------------------------------------------------
 
@@ -530,6 +536,8 @@ f"{value:{width + padding!r}.{precision}}"
         (format_specifier))
       (string_end)))
   (expression_statement
+    (string (interpolation (identifier) (format_specifier))))
+  (expression_statement
     (string
       (string_start)
       (interpolation
@@ -556,6 +564,42 @@ f"{value:{width + padding!r}.{precision}}"
           (format_expression
             (identifier))))
       (string_end))))
+      (interpolation (identifier) (format_specifier))))
+  (expression_statement
+    (string
+      (interpolation (integer) (format_specifier))))
+  (expression_statement
+    (string
+      (interpolation (identifier) (type_conversion) (format_specifier))))
+  (expression_statement
+    (string
+      (interpolation (identifier) (format_specifier))))
+  (expression_statement
+    (string
+      (interpolation 
+        (parenthesized_expression
+          (named_expression
+            (identifier)
+            (integer))))))
+  (expression_statement
+    (string
+      (interpolation 
+        (identifier)
+        (format_specifier
+          (format_expression
+            (parenthesized_expression
+              (named_expression
+                (identifier)
+                (call
+                  (attribute
+                    (dictionary
+                      (pair
+                        (integer)
+                        (integer)))
+                    (identifier))
+                  (argument_list
+                    (integer)))))
+            (format_specifier)))))))
 
 ================================================================================
 Unicode escape sequences

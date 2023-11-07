@@ -13,6 +13,7 @@
 // @ts-check
 
 const PREC = {
+  named_expression: -3,
   // this resolves a conflict between the usage of ':' in a lambda vs in a
   // typed parameter. In the case of a lambda, we don't allow typed parameters.
   lambda: -2,
@@ -53,6 +54,7 @@ module.exports = grammar({
     [$.tuple, $.tuple_pattern],
     [$.list, $.list_pattern],
     [$.with_item, $._collection_elements],
+    [$._named_expression_lhs, $.pattern],
     [$.named_expression, $.as_pattern],
     [$.print_statement, $.primary_expression],
     [$.type_alias_statement, $.primary_expression],
@@ -221,11 +223,11 @@ module.exports = grammar({
       $.yield,
     ),
 
-    named_expression: $ => seq(
+    named_expression: $ => prec(PREC.named_expression, seq(
       field('name', $._named_expression_lhs),
       ':=',
-      field('value', $.expression),
-    ),
+      field('value', $.expression)
+    )),
 
     _named_expression_lhs: $ => choice(
       $.identifier,
@@ -947,7 +949,7 @@ module.exports = grammar({
       $.member_type,
     ),
     splat_type: $ => prec(1, seq(choice('*', '**'), $.identifier)),
-    generic_type: $ => prec(1, seq($.identifier, $.type_parameter)),
+    generic_type: $ => prec(1, seq(choice($.identifier, $.attribute), $.type_parameter)),
     union_type: $ => prec.left(seq($.type, '|', $.type)),
     constrained_type: $ => prec.right(seq($.type, ':', $.type)),
     member_type: $ => seq($.type, '.', $.identifier),
@@ -1067,10 +1069,50 @@ module.exports = grammar({
       repeat1($.string),
     ),
 
-    string: $ => seq(
+    string: $ => prec(40, seq(
       $.string_start,
       repeat(choice($.interpolation, $.string_content)),
       $.string_end,
+    )),
+
+    _interpolation_not_operator: $ => prec(PREC.not, seq(
+      'not',
+      field('argument', $._interpolation_expression)
+    )),
+
+    _interpolation_await: $ => prec(PREC.unary, seq(
+      'await',
+      $._interpolation_expression
+    )),
+
+    _interpolation_boolean_operator: $ => choice(
+      prec.left(PREC.and, seq(
+        field('left', $._interpolation_expression),
+        field('operator', 'and'),
+        field('right', $._interpolation_expression)
+      )),
+      prec.left(PREC.or, seq(
+        field('left', $._interpolation_expression),
+        field('operator', 'or'),
+        field('right', $._interpolation_expression)
+      ))
+    ),
+    
+    _interpolation_conditional_expression: $ => prec.right(PREC.conditional, seq(
+      $._interpolation_expression,
+      'if',
+      $._interpolation_expression,
+      'else',
+      $._interpolation_expression
+    )),
+
+    _interpolation_expression: $ => choice(
+      $.comparison_operator,
+      alias($._interpolation_not_operator, $.not_operator),
+      alias($._interpolation_boolean_operator, $.boolean_operator),
+      alias($._interpolation_await, $.await),
+      $.primary_expression,
+      alias($._interpolation_conditional_expression, $.conditional_expression)
     ),
 
     string_content: $ => prec.right(repeat1(
@@ -1083,19 +1125,35 @@ module.exports = grammar({
 
     interpolation: $ => seq(
       '{',
-      field('expression', $._f_expression),
+      field('expression', $._interpolation_expression),
       optional('='),
       optional(field('type_conversion', $.type_conversion)),
       optional(field('format_specifier', $.format_specifier)),
       '}',
     ),
 
-    _f_expression: $ => choice(
-      $.expression,
-      $.expression_list,
-      $.pattern_list,
-      $.yield,
+    format_specifier: $ => prec(5, seq(
+      ':',
+      repeat(choice(
+        token(prec(1, /[^{}\n]+/)),
+        $.format_expression,
+      ))
+    )),
+
+    format_expression: $ => seq(
+      '{',
+      $._interpolation_expression,
+      optional('='),
+      optional($.type_conversion),
+      optional(alias($._literal_format_specifier, $.format_specifier)),
+      '}',
     ),
+
+    _literal_format_specifier: $ => /:(?:[^{}]?[<>=])?[\+\- ]?\d*[_,]?(?:.\d+)?[bcdeEfFgGnosxX%]?/,
+
+    type_conversion: $ => /![a-z]/,
+
+    _escape_interpolation: $ => choice('{{', '}}'),
 
     escape_sequence: _ => token.immediate(prec(1, seq(
       '\\',

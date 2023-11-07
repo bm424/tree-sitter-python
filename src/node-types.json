@@ -636,6 +636,22 @@
       "required": true,
       "types": [
         {
+          "type": "boolean_operator",
+          "named": true
+        },
+        {
+          "type": "comparison_operator",
+          "named": true
+        },
+        {
+          "type": "conditional_expression",
+          "named": true
+        },
+        {
+          "type": "not_operator",
+          "named": true
+        },
+        {
           "type": "primary_expression",
           "named": true
         }
@@ -1721,19 +1737,23 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "boolean_operator",
             "named": true
           },
           {
-            "type": "expression_list",
+            "type": "comparison_operator",
             "named": true
           },
           {
-            "type": "pattern_list",
+            "type": "conditional_expression",
             "named": true
           },
           {
-            "type": "yield",
+            "type": "not_operator",
+            "named": true
+          },
+          {
+            "type": "primary_expression",
             "named": true
           }
         ]
@@ -1889,6 +1909,10 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "attribute",
+          "named": true
+        },
         {
           "type": "identifier",
           "named": true
@@ -2048,19 +2072,23 @@
         "required": true,
         "types": [
           {
-            "type": "expression",
+            "type": "boolean_operator",
             "named": true
           },
           {
-            "type": "expression_list",
+            "type": "comparison_operator",
             "named": true
           },
           {
-            "type": "pattern_list",
+            "type": "conditional_expression",
             "named": true
           },
           {
-            "type": "yield",
+            "type": "not_operator",
+            "named": true
+          },
+          {
+            "type": "primary_expression",
             "named": true
           }
         ]
@@ -3739,6 +3767,10 @@
     "named": false
   },
   {
+    "type": "{{",
+    "named": false
+  },
+  {
     "type": "|",
     "named": false
   },
@@ -3748,6 +3780,10 @@
   },
   {
     "type": "}",
+    "named": false
+  },
+  {
+    "type": "}}",
     "named": false
   },
   {
